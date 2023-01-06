@@ -22,6 +22,13 @@ class ViewController: UIViewController, WKNavigationDelegate {
         super.viewDidLoad()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let reload = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
+        
+        toolbarItems = [space, reload]
+        navigationController?.isToolbarHidden = false
+        
+        
         // Do any additional setup after loading the view.
         let url = URL(string: "https://www.apple.com")!
         webView.load(URLRequest(url: url))
