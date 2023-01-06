@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController, WKNavigationDelegate {
     var webView: WKWebView!
-    
+    var progressView: UIProgressView!
     
     override func loadView() {
         webView = WKWebView()
@@ -22,17 +22,29 @@ class ViewController: UIViewController, WKNavigationDelegate {
         super.viewDidLoad()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
+        
+        // Add space and refresh button
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let reload = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
         
-        toolbarItems = [space, reload]
+        // Add progress bar
+        progressView = UIProgressView(progressViewStyle: .default)
+        progressView.sizeToFit()
+        let progressButton = UIBarButtonItem(customView: progressView)
+        
+        //fill toobaritems array with the created buttons and show the toolbar
+        toolbarItems = [progressButton, space, reload]
         navigationController?.isToolbarHidden = false
         
-        
+        //Adding observer to view the loading progress
+        webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
         // Do any additional setup after loading the view.
         let url = URL(string: "https://www.apple.com")!
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
+        
+        
+        
         
     }
     
@@ -57,6 +69,13 @@ class ViewController: UIViewController, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         title = webView.title
+    }
+    
+    //Change the progress value
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "estimatedProgress"{
+            progressView.progress = Float(webView.estimatedProgress)
+        }
     }
 }
 
