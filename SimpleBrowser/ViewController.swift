@@ -11,6 +11,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
     var webView: WKWebView!
     var progressView: UIProgressView!
     var websites = ["apple.com", "twitter.com", "hackingwithswift.com"]
+    var allowedWebsites = ["apple.com", "hackingwithswift.com"]
     
     override func loadView() {
         webView = WKWebView()
@@ -33,8 +34,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
         progressView.sizeToFit()
         let progressButton = UIBarButtonItem(customView: progressView)
         
+        // Go back and forward buttons
+        let back = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backClicked))
+        let forward = UIBarButtonItem(title: "Forward", style: .plain, target: self, action: #selector(forwardClicked))
+        
         //fill toobaritems array with the created buttons and show the toolbar
-        toolbarItems = [progressButton, space, reload]
+        toolbarItems = [back, progressButton, forward, space, reload]
         navigationController?.isToolbarHidden = false
         
         //Adding observer to view the loading progress
@@ -64,7 +69,19 @@ class ViewController: UIViewController, WKNavigationDelegate {
     func openPage(action: UIAlertAction){
         guard let actionTitle = action.title else {return}
         guard let url  = URL(string: "https://\(actionTitle)") else {return}
-        webView.load(URLRequest(url: url))
+        
+        // Check if the website is in the allowed websites list or show an error to the user
+        if allowedWebsites.contains(actionTitle){
+            webView.load(URLRequest(url: url))
+        }
+        else{
+            let ac = UIAlertController(title: "Error", message: "This is a blocked website", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "Return", style: .default))
+            ac.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+            
+            present(ac, animated: true)
+        }
+        
     }
     
     // Set the page title
@@ -94,7 +111,25 @@ class ViewController: UIViewController, WKNavigationDelegate {
         decisionHandler(.cancel)
     }
     
-    
+    // Go back to previous page
+    @objc func backClicked (sender: UIBarButtonItem){
+        if(webView.canGoBack) {
+            //Go back in webview history
+            webView.goBack()
+        } else {
+            //Pop view controller to preview view controller
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    // Go to the next page
+    @objc func forwardClicked (sender: UIBarButtonItem){
+        if(webView.canGoForward){
+            webView.goForward()
+        }
+        else{
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
 }
 
 
