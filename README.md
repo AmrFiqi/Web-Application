@@ -12,3 +12,5 @@ UIProgressView,
 Key-Value Observing (KVO)
 
 ![](https://github.com/AmrFiqi/webApplication/blob/main/browser_app.gif)
+
+![](https://github.com/AmrFiqi/Web-Application/blob/main/browser%20updates.gif)
